@@ -1,0 +1,19 @@
+package com.mm.dispatchprogram;
+
+public class Lime {
+
+	private String name;
+
+	public Lime(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return "Lime [name=" + name + "]";
+	}
+	
+	public String getName() {
+		return name;
+	}
+}
