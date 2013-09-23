@@ -1,12 +1,14 @@
 package com.mm.concurrency.dispatch.annotation;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Map;
 
 import com.mm.concurrency.dispatch.Attribute;
-import com.mm.concurrency.dispatch.Data;
 import com.mm.concurrency.dispatch.key.KeyComponent;
-import com.mm.concurrency.dispatch.key.TypeComponent;
 
 public class AnnotationComponent implements KeyComponent {
 	
@@ -43,6 +45,19 @@ public class AnnotationComponent implements KeyComponent {
 	}
 	
 	protected Method getMethod(Class<?> type, String field){
+		
+		// First try java bean
+		try {
+			BeanInfo beanInfo = Introspector.getBeanInfo(type);
+			for (PropertyDescriptor p : beanInfo.getPropertyDescriptors()){
+				if (p.getName().equals(field)){
+					return p.getReadMethod();
+				}
+			}
+		} catch (IntrospectionException e) {
+			throw new RuntimeException(e);
+		}
+		
 		Method[] methods = type.getMethods();
 		for (Method method : methods) {
 		    Attribute annos = method.getAnnotation(Attribute.class);

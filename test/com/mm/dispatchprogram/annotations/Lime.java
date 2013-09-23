@@ -15,7 +15,6 @@ public class Lime {
 		return "Lime [name=" + name + "]";
 	}
 	
-	@Attribute("Name")
 	public String getName() {
 		return name;
 	}

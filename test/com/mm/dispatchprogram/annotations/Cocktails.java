@@ -22,9 +22,9 @@ public class Cocktails {
 		// Ruleset for apply
 		RuleSet ingregientsRules = new RuleSet("IngredientsRules",
 			new AnnotationKeyBuilder()
-				.with(boundField(Apple.class,"Name","X")).buildRule("AppleRule"),
+				.with(boundField(Apple.class,"name","X")).buildRule("AppleRule"),
 			new AnnotationKeyBuilder()
-				.with(boundField(Lime.class,"Name","X")).buildRule("LimeRule"));
+				.with(boundField(Lime.class,"name","X")).buildRule("LimeRule"));
 		
 		
 		// Register the Shaker

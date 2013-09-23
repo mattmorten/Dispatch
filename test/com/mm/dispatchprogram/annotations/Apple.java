@@ -14,7 +14,6 @@ public class Apple {
 		return "Apple [name=" + name + "]";
 	}
 
-	@Attribute("Name")
 	public String getName() {
 		return name;
 	}
