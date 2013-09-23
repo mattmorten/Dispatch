@@ -2,10 +2,8 @@ package com.mm.concurrency.dispatch;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,6 +14,8 @@ import java.util.concurrent.Executors;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.mm.concurrency.dispatch.annotation.AnnotationHolder;
+import com.mm.concurrency.dispatch.annotation.AnnotationKeyBuilder;
 import com.mm.concurrency.dispatch.generator.Generator;
 import com.mm.concurrency.dispatch.generator.GeneratorRunner;
 import com.mm.concurrency.dispatch.key.Key;
@@ -72,6 +72,12 @@ public class Dispatcher {
 		try {
 			latch.await();
 		} catch (InterruptedException e) {}
+	}
+	
+	// For annotated objects
+	public synchronized void dataReceived(Object data){
+		dataReceived(new AnnotationKeyBuilder()
+			.with(new AnnotationHolder(data)).buildKey(), data);
 	}
 	
 	public synchronized void dataReceived(Key key, Object data){
