@@ -12,6 +12,19 @@ Here are the core concepts:
 * __Dispatcher__. The central coordinator. Data is passed to the Dispatcher when it becomes available. The Dispatcher evaluates the rules against this data item, and hands it over to a Receiver if possible.
 * __Receiver__. A process which is begins running when data is available. 
  
+### Motivation
+Threading in Java is complex, and so many people don't bother trying to do it, or do it incorrectly. If we abandon concurrency all together, then we lose out on important potential gains:
+
+* Smaller memory footprint
+* Faster runtime
+
+High level design should produce dependencies between data. It is much clearer to express dependencies explicitly using rules, rather than use low-level Java concurrency features.
+
+Once we've defined the data dependencies in the application, couldn't the application itself perform runtime empirical analysis to determin optimal parameters such as threadpool size, batching size, memory size etc?
+
+Someone with a strong understanding of concurrency probably wouldn't need a library like this. But for everyone else, this could be an easy way to get started.
+
+
 ###Rules / Dependencies
 Conceptually, the simplest rule might look like this:
 
@@ -65,6 +78,10 @@ What I'd like to do:
 * Dispatchers that aren't locked down to one-thread-at-a-time for processing data
 * Different concurrency structures
 * Shutdown logic (signalling to other processors when we're completely done)
+* Empirical runtime analysis, to vary thread-pool sizes, batch size etc.
+
+###Current State
+Again, this project is a toy. Don't use it for anything important.
 
 ### Example Code
 
