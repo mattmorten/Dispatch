@@ -13,14 +13,12 @@ import com.mm.concurrency.dispatch.key.Key;
 public class RuleSet{
 
 	private Set<Rule> rules;
-	private String name;
 	
-	public RuleSet(Set<Rule> rules, String name) {
+	public RuleSet(Set<Rule> rules) {
 		this.rules = rules;
-		this.name = name;
 	}
 	
-	public RuleSet(String name, Rule... rules) {
+	public RuleSet(Rule... rules) {
 		this.rules = new HashSet<Rule>(Arrays.asList(rules));
 	}
 
@@ -38,7 +36,28 @@ public class RuleSet{
 		return null;
 	}
 
-	public String getName() {
-		return name;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((rules == null) ? 0 : rules.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RuleSet other = (RuleSet) obj;
+		if (rules == null) {
+			if (other.rules != null)
+				return false;
+		} else if (!rules.equals(other.rules))
+			return false;
+		return true;
 	}
 }

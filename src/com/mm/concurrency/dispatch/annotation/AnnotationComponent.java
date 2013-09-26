@@ -75,6 +75,10 @@ public class AnnotationComponent implements KeyComponent {
 		throw new IllegalArgumentException("No field [" + field + "] on target class [" + type + "]");
 	}
 	
+	public Class<?> getType() {
+		return type;
+	}
+	
 	protected Object getAnnotationValue(Object other, Method method){
 		
         try {
@@ -134,7 +138,13 @@ public class AnnotationComponent implements KeyComponent {
 		
 		@Override
 		public boolean matches(KeyComponent other, Map<String, Object> bindings) {
-			return other instanceof AnnotationComponent.All;
+			if (!(other instanceof AnnotationComponent.All)){
+				return false;
+			}
+			
+			AnnotationComponent ano = (AnnotationComponent) other;
+			
+			return ano.type.equals(type);
 		}
 				
 	}

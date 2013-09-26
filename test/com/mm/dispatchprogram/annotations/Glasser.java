@@ -1,6 +1,7 @@
 package com.mm.dispatchprogram.annotations;
 
 import com.mm.concurrency.dispatch.Data;
+import com.mm.concurrency.dispatch.Dispatcher;
 import com.mm.concurrency.dispatch.receiver.Receiver;
 
 public class Glasser implements Receiver {
@@ -20,6 +21,10 @@ public class Glasser implements Receiver {
 	@Data("MixtureRule")
 	public void setMixture(CocktailMixture mixture) {
 		this.mixture = mixture;
+	}
+	
+	public void setDispatcher(Dispatcher dispatcher) {
+	
 	}
 
 }

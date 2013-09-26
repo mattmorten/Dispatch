@@ -1,5 +1,6 @@
 package com.mm.dispatchprogram.annotations;
 
+import static com.mm.concurrency.dispatch.annotation.AnnotationKeyBuilder.all;
 import static com.mm.concurrency.dispatch.key.KeyBuilder.allId;
 
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.List;
 import com.mm.concurrency.dispatch.Dispatcher;
 import com.mm.concurrency.dispatch.annotation.AnnotationKeyBuilder;
 import com.mm.concurrency.dispatch.generator.Generator;
+import com.mm.concurrency.dispatch.key.Key;
 
 public class AppleGenerator implements Generator {
 
@@ -38,9 +40,7 @@ public class AppleGenerator implements Generator {
 		}
 		
 		// All gone
-		dispatcher.dataReceived(new AnnotationKeyBuilder()
-			.with(AnnotationKeyBuilder.allType(Apple.class))
-			.buildKey(), null);
+		dispatcher.dataReceived(new Key(all(Apple.class)));
 	}
 
 }

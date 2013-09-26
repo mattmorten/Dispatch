@@ -26,20 +26,13 @@ public class AnnotationDispatchTest {
 			.with(boundField(Orange.class, "name", "X"))
 			.buildRule("OrangeRule");
 		
-		RuleSet ruleSet = new RuleSet("ApplesAndOranges",rule1,rule2);
+		RuleSet ruleSet = new RuleSet(rule1,rule2);
 		
-		d.registerPool(ruleSet, new ReceiverFactory(){
-			public Receiver createReceiver() {
-				return new TestReceiver();
-			}
-		}, false,null);
+		d.registerPool(ruleSet, TestReceiver.class);
 		
 		d.dataReceived(new Apple("123"));
-		
 		d.dataReceived(new Apple("456"));
-		
 		d.dataReceived(new Orange("123"));
-		
 		d.dataReceived(new Orange("678"));
 		
 		

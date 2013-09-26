@@ -19,14 +19,14 @@ import com.mm.concurrency.dispatch.C;
 import com.mm.concurrency.dispatch.rule.Partial;
 import com.mm.concurrency.dispatch.rule.Rule;
 import com.mm.concurrency.dispatch.rule.RuleSet;
-import com.mm.concurrency.dispatch.rule.SimpleRule;
+import com.mm.concurrency.dispatch.rule.Rule;
 
 public class RuleTest {
 
 	@Test
 	public void testSimpleRuleMatching() throws Exception {
 		
-		SimpleRule rule = new KeyBuilder()
+		Rule rule = new KeyBuilder()
 			.then(type(A.class), anyId())
 			.then(type(B.class), id("Balloons"))
 			.then(type(C.class), anyId())
@@ -60,7 +60,7 @@ public class RuleTest {
 	@Test
 	public void testSimpleBinding() throws Exception {
 		
-		SimpleRule rule = new KeyBuilder()
+		Rule rule = new KeyBuilder()
 			.then(type(A.class), anyId())
 			.then(type(B.class), boundId("X"))
 			.then(type(C.class), boundId("X"))
@@ -99,7 +99,7 @@ public class RuleTest {
 			.then(type(C.class), boundId("X"))
 			.buildRule("TestRule2");
 		
-		RuleSet ruleSet = new RuleSet("Matching",rule1,rule2);
+		RuleSet ruleSet = new RuleSet(rule1,rule2);
 		
 		Key key = new KeyBuilder()
 			.then(type(A.class), id("A1"))

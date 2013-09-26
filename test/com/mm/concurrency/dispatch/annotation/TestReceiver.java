@@ -1,6 +1,7 @@
 package com.mm.concurrency.dispatch.annotation;
 
 import com.mm.concurrency.dispatch.Data;
+import com.mm.concurrency.dispatch.Dispatcher;
 import com.mm.concurrency.dispatch.receiver.Receiver;
 
 public class TestReceiver implements Receiver {
@@ -24,5 +25,6 @@ public class TestReceiver implements Receiver {
 		System.out.println("O: " +orange);
 	}
 
-	
+	public void setDispatcher(Dispatcher dispatcher) {
+	}
 }

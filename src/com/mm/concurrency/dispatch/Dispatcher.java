@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -22,6 +23,7 @@ import com.mm.concurrency.dispatch.key.Key;
 import com.mm.concurrency.dispatch.receiver.Receiver;
 import com.mm.concurrency.dispatch.receiver.ReceiverFactory;
 import com.mm.concurrency.dispatch.rule.Partial;
+import com.mm.concurrency.dispatch.rule.Rule;
 import com.mm.concurrency.dispatch.rule.RuleSet;
 
 public class Dispatcher {
@@ -38,33 +40,49 @@ public class Dispatcher {
 	private List<Generator> generators = new ArrayList<Generator>();
 	private ExecutorService generatorPool;
 	
-	private int threadsToWaitFor;
-	
 	private CountDownLatch latch;
 	
-	public void registerPool(RuleSet ruleSet, ReceiverFactory factory, boolean waitUntilFinished,
-			RuleSet killRule){
+	public void registerPool(RuleSet ruleSet, ReceiverFactory factory){
 		rules.put(ruleSet, factory);
 		pools.put(ruleSet, Executors.newFixedThreadPool(5));
 		
-		if (waitUntilFinished)
-			threadsToWaitFor++;
 	}
+	
+	public void registerPool(RuleSet ruleSet, final Class<? extends Receiver> receiverClass){
+
+		ReceiverFactory noarg = new ReceiverFactory(){
+			public Receiver createReceiver() {
+				try {
+					return receiverClass.newInstance();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+		};
+		
+		this.registerPool(ruleSet,noarg);
+	}
+	
 	
 	public void registerGenerator(Generator generator){
 		generators.add(generator);
 	}
 	
-	public void startAndAwait(){
-		threadsToWaitFor += generators.size();
+	public void startAndAwait(RuleSet ruleSet){
 		generatorPool = Executors.newFixedThreadPool(generators.size());
 
-		latch = new CountDownLatch(threadsToWaitFor);
+		// Hook up the kill receiver
+		registerPool(ruleSet, new KillReceiverFactory());
+		
+		latch = new CountDownLatch(1);
 		for (Generator gen : generators) {
 			generatorPool.execute(new GeneratorRunner(gen){
 				@Override
 				public void postRun() {
-					latch.countDown();
+//					latch.countDown();
 				}
 			});
 		}
@@ -72,12 +90,43 @@ public class Dispatcher {
 		try {
 			latch.await();
 		} catch (InterruptedException e) {}
+		
+		shutdown();
+		System.out.println("Done");
+	}
+	
+	protected void shutdown(){
+		generatorPool.shutdown();
+		for (RuleSet ruleSet: pools.keySet()) {
+			ExecutorService pool = pools.get(ruleSet);
+			pool.shutdown();
+		}
+		
+		try {
+			generatorPool.awaitTermination(100, TimeUnit.SECONDS);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		
+		for (RuleSet ruleSet: pools.keySet()) {
+						
+			try {
+				ExecutorService pool = pools.get(ruleSet);
+				pool.awaitTermination(100, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	// For annotated objects
 	public synchronized void dataReceived(Object data){
 		dataReceived(new AnnotationKeyBuilder()
 			.with(new AnnotationHolder(data)).buildKey(), data);
+	}
+	
+	public synchronized void signal(Key key){
+		dataReceived(key,key);
 	}
 	
 	public synchronized void dataReceived(Key key, Object data){
@@ -157,7 +206,29 @@ public class Dispatcher {
 		        }
 		    }
 		}
+		
+		receiver.setDispatcher(this);
 		return receiver;
 	}
 
+	private class KillReceiverFactory implements ReceiverFactory {
+
+		public Receiver createReceiver() {
+			return new KillReceiver();
+		}
+		
+	}
+	
+	private class KillReceiver implements Receiver {
+		public void run() {
+			System.out.println("Shutting down service.");	
+			latch.countDown();
+		}
+		
+		public void setDispatcher(Dispatcher dispatcher) {
+		}
+		
+	}
+	
 }
+

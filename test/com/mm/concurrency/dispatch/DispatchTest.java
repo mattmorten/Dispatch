@@ -33,13 +33,9 @@ public class DispatchTest {
 			.then(type(C.class), boundId("X"))
 			.buildRule("OrangeRule");
 		
-		RuleSet ruleSet = new RuleSet("ApplesAndOranges",rule1,rule2);
+		RuleSet ruleSet = new RuleSet(rule1,rule2);
 		
-		d.registerPool(ruleSet, new ReceiverFactory(){
-			public Receiver createReceiver() {
-				return new TestReceiver();
-			}
-		}, false,null);
+		d.registerPool(ruleSet, TestReceiver.class);
 		
 		d.dataReceived(new KeyBuilder()
 							.then(type(A.class), id("A1"))

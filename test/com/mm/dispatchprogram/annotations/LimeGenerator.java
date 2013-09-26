@@ -7,7 +7,10 @@ import java.util.List;
 import com.mm.concurrency.dispatch.Dispatcher;
 import com.mm.concurrency.dispatch.annotation.AnnotationKeyBuilder;
 import com.mm.concurrency.dispatch.generator.Generator;
+import com.mm.concurrency.dispatch.key.Key;
 import com.mm.concurrency.dispatch.key.KeyBuilder;
+
+import static com.mm.concurrency.dispatch.annotation.AnnotationKeyBuilder.all;
 import static com.mm.concurrency.dispatch.key.KeyBuilder.*;
 
 public class LimeGenerator implements Generator {
@@ -39,9 +42,7 @@ public class LimeGenerator implements Generator {
 		}
 		
 		// All gone
-		dispatcher.dataReceived(new AnnotationKeyBuilder()
-			.with(AnnotationKeyBuilder.allType(Lime.class))
-			.buildKey(), null);
+		dispatcher.dataReceived(new Key(all(Lime.class)));
 	}
 
 }

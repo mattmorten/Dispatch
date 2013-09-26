@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.mm.concurrency.dispatch.rule.SimpleRule;
+import com.mm.concurrency.dispatch.rule.Rule;
 
 public class KeyBuilder {
 	private List<KeyComponent> components = new ArrayList<KeyComponent>();
@@ -52,14 +52,10 @@ public class KeyBuilder {
 	}
 	
 	public Key buildKey(){
-		return new Key(components, false);
+		return new Key(components);
 	}
 	
-	public Key buildPoisonKey(){
-		return new Key(components, true);
-	}
-	
-	public SimpleRule buildRule(String name){
-		return new SimpleRule(name, components);
+	public Rule buildRule(String name){
+		return new Rule(name, components);
 	}
 }

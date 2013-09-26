@@ -23,5 +23,8 @@ public class TestReceiver implements Receiver {
 		System.out.println("O: " +orange);
 	}
 
+	public void setDispatcher(Dispatcher dispatcher) {
+		
+	}
 	
 }

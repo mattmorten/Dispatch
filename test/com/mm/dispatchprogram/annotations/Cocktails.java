@@ -1,14 +1,15 @@
 package com.mm.dispatchprogram.annotations;
 
+import static com.mm.concurrency.dispatch.annotation.AnnotationKeyBuilder.all;
+import static com.mm.concurrency.dispatch.annotation.AnnotationKeyBuilder.any;
 import static com.mm.concurrency.dispatch.annotation.AnnotationKeyBuilder.boundField;
-import static com.mm.concurrency.dispatch.key.KeyBuilder.allId;
-import static com.mm.concurrency.dispatch.key.KeyBuilder.type;
 
 import com.mm.concurrency.dispatch.Dispatcher;
 import com.mm.concurrency.dispatch.annotation.AnnotationKeyBuilder;
 import com.mm.concurrency.dispatch.key.KeyBuilder;
 import com.mm.concurrency.dispatch.receiver.Receiver;
 import com.mm.concurrency.dispatch.receiver.ReceiverFactory;
+import com.mm.concurrency.dispatch.rule.Rule;
 import com.mm.concurrency.dispatch.rule.RuleSet;
 
 public class Cocktails {
@@ -20,56 +21,34 @@ public class Cocktails {
 		d.registerGenerator(new AppleGenerator(d));
 		
 		// Ruleset for apply
-		RuleSet ingregientsRules = new RuleSet("IngredientsRules",
-			new AnnotationKeyBuilder()
-				.with(boundField(Apple.class,"name","X")).buildRule("AppleRule"),
-			new AnnotationKeyBuilder()
-				.with(boundField(Lime.class,"name","X")).buildRule("LimeRule"));
+		RuleSet ingregientsRules = new RuleSet(
+			new Rule("AppleRule",boundField(Apple.class,"name","X")),
+			new Rule("LimeRule",boundField(Lime.class,"name","X")));
 		
 		
 		// Register the Shaker
-		d.registerPool(ingregientsRules, 
-				new ReceiverFactory() {
-					public Receiver createReceiver() {
-						return new Shaker(d);
-					}
-				}, false,null);
+		d.registerPool(ingregientsRules,Shaker.class);
 		
 		// Register the Glasser
-		RuleSet mixtureRule = new RuleSet("MixtureRuleSet",
-			new AnnotationKeyBuilder()
-				.with(AnnotationKeyBuilder.anyFieldValue(CocktailMixture.class))
-				.buildRule("MixtureRule"));
+		RuleSet mixtureRule = new RuleSet(
+			new Rule("MixtureRule",any(CocktailMixture.class)));
 		
 
-		d.registerPool(mixtureRule, 
-				new ReceiverFactory() {
-					public Receiver createReceiver() {
-						return new Glasser();
-					}
-				}, false, null);
+		d.registerPool(mixtureRule,Glasser.class);
 
 		// Register the Tidyer
-		RuleSet allIngredientsGoneRule = new RuleSet("AllIngredients",
-				new AnnotationKeyBuilder()
-					.with(AnnotationKeyBuilder.allType(Lime.class))
-					.buildRule("AllLimeRule"),
-				new KeyBuilder()
-					.then(AnnotationKeyBuilder.allType(Apple.class))
-					.buildRule("AllAppleRule"));
+		RuleSet allIngredientsGoneRule = new RuleSet(
+				new Rule("LimeCompleteRule",all(Lime.class)),
+				new Rule("AppleCompleteRule",all(Apple.class)));
 			
 
-		d.registerPool(allIngredientsGoneRule, 
-				new ReceiverFactory() {
-					public Receiver createReceiver() {
-						return new Tidyer();
-					}
-				}, false, null);
+		d.registerPool(allIngredientsGoneRule, Tidyer.class);
 		
-		d.startAndAwait();
+		// Create a ruleset which signifies we're done
+		RuleSet finished = new RuleSet(
+				new Rule("TidyCompleteRule",all(Tidyer.class)));
 		
 		
-		Thread.sleep(10 * 1000);
-		
+		d.startAndAwait(finished);		
 	}
 }

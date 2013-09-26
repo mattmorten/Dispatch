@@ -10,10 +10,6 @@ public class Shaker implements Receiver {
 	private Apple apple;
 	private Lime lime;
 	
-	public Shaker(Dispatcher dispatcher) {
-		this.dispatcher = dispatcher;
-	}
-
 	public void run() {
 		System.out.println("Shaking a: " + apple.getName() + ", l: " + lime.getName());
 		try {
@@ -23,7 +19,6 @@ public class Shaker implements Receiver {
 		}
 		
 		CocktailMixture mixture = new CocktailMixture(apple, lime);
-		
 		dispatcher.dataReceived(mixture);
 		
 	}
@@ -36,5 +31,9 @@ public class Shaker implements Receiver {
 	@Data("AppleRule")
 	public void setApple(Apple apple) {
 		this.apple = apple;
+	}
+	
+	public void setDispatcher(Dispatcher dispatcher) {
+		this.dispatcher = dispatcher;
 	}
 }
