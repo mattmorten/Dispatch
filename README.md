@@ -66,6 +66,7 @@ This project is just a toy for now. It has:
 
 * A fluent-builder interface for describing rules
 * A Dispatcher object
+* A primative kill-switch mechanism
 * Data annotations for injecting objects into Receivers
 * Rules can include (Any, All, Field-values, Field variable-binding). We can also have multiple rules.
 * Receivers are started in thread pools.
@@ -77,7 +78,6 @@ What I'd like to do:
 * More complex rule options
 * Dispatchers that aren't locked down to one-thread-at-a-time for processing data
 * Different concurrency structures
-* Shutdown logic (signalling to other processors when we're completely done)
 * Empirical runtime analysis, to vary thread-pool sizes, batch size etc.
 
 ###Current State
