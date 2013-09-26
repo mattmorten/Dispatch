@@ -93,10 +93,8 @@ Here is how we define rules at the moment (this needs to be cleaned up):
  * a CustomerDetails object and a AddressObject with the same "userId" value.
  */
 RuleSet nameAndAddressRules = new RuleSet("NameAndAddressRules",
-			new AnnotationKeyBuilder()
-				.with(boundField(CustomerDetails.class,"userId","X")).buildRule("NameRule"),
-			new AnnotationKeyBuilder()
-				.with(boundField(Address.class,"userId","X")).buildRule("AddressRule"));
+			new Rule("NameRule",boundField(CustomerDetails.class,"userId","X")),
+			new Rule("AddressRule",boundField(Address.class,"userId","X")));
 		
 ```
 
@@ -109,12 +107,7 @@ Next, we tie up the rules to a receiver. I.e. when a rule is satisfied, the `Rec
  */
 Dispatcher dispatcher = new Dispatcher();
 
-dispatcher.registerPool(nameAndAddressRules, 
-  new ReceiverFactory() {
-	  public Receiver createReceiver() {
-		  return new DetailsCombiner(d);
-		}
-	}, false,null);
+dispatcher.registerPool(nameAndAddressRules, DetailsCombiner.class);
 				
 ```
 A DetailsCombiner object will be passed the CustomerDetails and the Address objects which it needs to do its work:
@@ -138,6 +131,10 @@ public class DetailsCombiner implements Receiver {
 	@Data("AddressRule")
 	public void setAddress(Address address) {
 		this.address = address;
+	}
+	
+	public void setDispatcher(Dispatcher dispatcher){
+		// Not required here
 	}
 }
 ```
